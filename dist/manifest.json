@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "LinkedIn Sales Navigator Scrapper",
+  "name": "Sales Navigator Demon",
   "version": "1.1",
   "description": "Extract publicly available lead data from LinkedIn Sales Navigator efficiently and export it in CSV format.",
   "permissions": ["activeTab", "scripting", "storage"],

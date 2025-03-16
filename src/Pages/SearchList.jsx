@@ -1,21 +1,26 @@
 /* eslint-disable no-undef */
 import { useState } from "react";
 import Papa from "papaparse";
-const LeadList = () => {
+const SearchList = () => {
   const [csvData, setCsvData] = useState("");
-  const [tableSheetCount, setTableSheetCount] = useState(0);
+  const [tableSearchSheetCount, setTableSearchSheetCount] = useState(0);
 
-  const fetchLeadData = async () => {
+  const fetchSearchData = async () => {
     try {
       const [tab] = await chrome.tabs.query({
         active: true,
         currentWindow: true,
       });
 
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: scrollToBottom,
+      });
+  
       const response = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
-          const tableElement = document.querySelector("table");
+          const tableElement = document.querySelector("ol.artdeco-list");
           if (tableElement) {
             return {
               tableHTML: tableElement.outerHTML,
@@ -28,21 +33,22 @@ const LeadList = () => {
       const data = response[0].result;
 
       if (data.tableHTML !== "No table found") {
-        convertTableToCsv(data.tableHTML);
+        convertSearchTableToCsv(data.tableHTML);
       }
     } catch (error) {
       console.error("Error fetching data", error);
     }
   };
 
-  const convertTableToCsv = async (tableHTML) => {
+  const convertSearchTableToCsv = async (tableHTML) => {
     try {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = tableHTML;
 
-      const table = tempDiv.querySelector("table");
-      const headers = Array.from(table.querySelectorAll("thead th"));
-      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const table = tempDiv.querySelector("ol.artdeco-list");
+      const rows = Array.from(table.querySelectorAll("li.artdeco-list__item"));
+
+      console.log(rows);
 
       const headerArray = [
         "FullName",
@@ -52,28 +58,26 @@ const LeadList = () => {
       ];
       // Extract rows
       const dataArray = rows.map((row) => {
-        const cells = Array.from(row.querySelectorAll("td"));
-
-        const nameCell = cells[0]?.querySelector("a span");
+        const nameCell = row?.querySelector('a span[data-anonymize="person-name"]');
         const name = nameCell ? nameCell.textContent.trim() : "Name not found";
 
-        const designationCell = cells[0]?.querySelector(
-          "div[data-anonymize='job-title']"
-        );
-        const designation = designationCell
-          ? designationCell.textContent.trim()
-          : "Job title not found";
+        const designationCell = row?.querySelector('div span[data-anonymize="title"]');
+        const designation = designationCell ? designationCell.textContent.trim() : "Job title not found";
 
-        const rowData = cells.map((cell, index) => {
-          // Replace dynamic columns with extracted data
-          if (index === 0) return name;
-          return cell.textContent.trim();
-        });
+        const companyCell = row?.querySelector('div a[data-anonymize="company-name"]');
+        const company = companyCell ? companyCell.textContent.trim() : "Company not found";
 
-        rowData.splice(1, 0, designation);
+        const countryCell = row?.querySelector('div span[data-anonymize="location"]');
+        const country = countryCell ? countryCell.textContent.trim() : "Country not found";
 
-        const rowDataFiltered = rowData.slice(0, 4);
-        return rowDataFiltered;
+        const rowData = [
+          name,
+          designation,
+          company,
+          country
+        ];
+
+        return rowData;
       });
 
       const previousData = await new Promise((resolve) => {
@@ -92,13 +96,13 @@ const LeadList = () => {
 
       chrome.storage.local.set({ scrapedData: combinedData });
 
-      setTableSheetCount(combinedData.length - 1);
+      setTableSearchSheetCount(combinedData.length - 1);
     } catch (error) {
       console.error("Error converting table to CSV", error);
     }
   };
 
-  const unperseData = async () => {
+  const unperseSearchData = async () => {
     const data = await new Promise((resolve) => {
       chrome.storage.local.get(["scrapedData"], (result) => {
         resolve(result.scrapedData || []);
@@ -113,7 +117,7 @@ const LeadList = () => {
     }
   };
 
-  const downloadCsv = () => {
+  const downloadSearchCsv = () => {
     if (!csvData) {
       console.error("No CSV data available for download");
       return;
@@ -130,12 +134,39 @@ const LeadList = () => {
     clearData();
   };
 
-  const clearData = () => {
+  const clearSearchData = () => {
     chrome.storage.local.remove("scrapedData", () => {
       setCsvData("");
-      setTableSheetCount(0);
+      setTableSearchSheetCount(0);
     });
   };
+
+  const scrollToBottom = async () => {
+    return new Promise((resolve) => {
+      let totalHeight = 0;
+      const distance = 200; 
+      const scrollDelay = 100; 
+      const container = document.getElementById("search-results-container"); // Target the specific div
+
+      if (!container) {
+        console.warn("Scroll container not found!");
+        resolve();
+        return;
+      }
+  
+      const timer = setInterval(() => {
+      const scrollHeight = container.scrollHeight;
+      container.scrollBy(0, distance);
+      totalHeight += distance;
+
+      if (totalHeight >= scrollHeight - container.clientHeight) {
+        clearInterval(timer);
+        setTimeout(resolve, 1000);
+      }
+    }, scrollDelay);
+    });
+  };
+  
 
   return (
     <div className="p-2 space-y-3">
@@ -144,40 +175,39 @@ const LeadList = () => {
         <span>
           Scrap data from{" "}
           <a
-            href="https://www.linkedin.com/sales/lists/people"
+            href="https://www.linkedin.com/sales/search/people"
             target="_blank"
             className="text-purple-400 underline font-medium"
           >
-            Lead List
+            Search List
           </a>{" "}
-          & select your list
         </span>
       </h1>
       <div className="flex flex-col text-center">
         <button
-          onClick={fetchLeadData}
+          onClick={fetchSearchData}
           className="py-2 px-4 bg-purple-600 rounded-lg cursor-pointer text-white"
         >
           Scrap This Table
         </button>
         <button
-          onClick={unperseData}
+          onClick={unperseSearchData}
           className="py-2 px-4 bg-purple-600 rounded-lg cursor-pointer text-white mt-3"
         >
           Convert to CSV
         </button>
         <button
-          onClick={clearData}
+          onClick={clearSearchData}
           className="py-2 px-4 bg-red-600 rounded-lg cursor-pointer text-white mt-3"
         >
           Clear Data
         </button>
-        <p className="my-2 text-gray-700">Total Rows: {tableSheetCount}</p>
+        <p className="my-2 text-gray-700">Search List Total Rows: {tableSearchSheetCount}</p>
 
         {csvData && (
           <div className="flex flex-col gap-2">
             <button
-              onClick={downloadCsv}
+              onClick={downloadSearchCsv}
               className="py-2 px-4 bg-green-600 rounded-lg cursor-pointer text-white"
             >
               Download CSV
@@ -189,4 +219,4 @@ const LeadList = () => {
   );
 };
 
-export default LeadList;
+export default SearchList;

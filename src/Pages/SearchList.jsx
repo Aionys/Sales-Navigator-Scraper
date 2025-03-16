@@ -1,9 +1,17 @@
 /* eslint-disable no-undef */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Papa from "papaparse";
 const SearchList = () => {
   const [csvData, setCsvData] = useState("");
   const [tableSearchSheetCount, setTableSearchSheetCount] = useState(0);
+
+  useEffect(() => {
+    chrome.storage.local.get(["scrapedData"], (result) => {
+      if (result.scrapedData && Array.isArray(result.scrapedData)) {
+        setTableSearchSheetCount(result.scrapedData.length - 1); // Exclude header row if present
+      }
+    });
+  }, []);
 
   const fetchSearchData = async () => {
     try {
@@ -171,7 +179,6 @@ const SearchList = () => {
   return (
     <div className="p-2 space-y-3">
       <h1 className="text-medium text-sm flex gap-2 items-center justify-center">
-        <span className="h-1 w-1 rounded-full bg-black"></span>
         <span>
           Scrap data from{" "}
           <a
@@ -186,29 +193,29 @@ const SearchList = () => {
       <div className="flex flex-col text-center">
         <button
           onClick={fetchSearchData}
-          className="py-2 px-4 bg-purple-600 rounded-lg cursor-pointer text-white"
+          className="py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg cursor-pointer text-white"
         >
           Scrap This Table
         </button>
         <button
           onClick={unperseSearchData}
-          className="py-2 px-4 bg-purple-600 rounded-lg cursor-pointer text-white mt-3"
+          className="py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg cursor-pointer text-white mt-3"
         >
           Convert to CSV
         </button>
         <button
           onClick={clearSearchData}
-          className="py-2 px-4 bg-red-600 rounded-lg cursor-pointer text-white mt-3"
+          className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded-lg cursor-pointer text-white mt-3"
         >
           Clear Data
         </button>
-        <p className="my-2 text-gray-700">Search List Total Rows: {tableSearchSheetCount}</p>
+        <p className="my-2 text-gray-700">Total Rows: {tableSearchSheetCount}</p>
 
         {csvData && (
           <div className="flex flex-col gap-2">
             <button
               onClick={downloadSearchCsv}
-              className="py-2 px-4 bg-green-600 rounded-lg cursor-pointer text-white"
+              className="py-2 px-4 bg-green-600 hover:bg-green-700 rounded-lg cursor-pointer text-white"
             >
               Download CSV
             </button>

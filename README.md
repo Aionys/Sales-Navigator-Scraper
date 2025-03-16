@@ -1,7 +1,7 @@
 This project is orginally created in [qtecsolution/Linkedin-Sales-Navigator-Scraper](https://github.com/qtecsolution/Linkedin-Sales-Navigator-Scraper) and I've modified it to my use case. Please check the orginal project for more information and support.
 
-### Version: 1.2.1
-### @tag Search List Scrapping Added
+### Version: 1.3.0
+### @tag Total rows count improved
 
 # Linkedin Sales Navigator Data Scraper Chrome Extension
 
@@ -36,6 +36,11 @@ This project is a Chrome extension designed to scrape data from LinkedIn's Sales
 - This extension is intended for educational and ethical use only.
 
 ## Changelog
+
+### v1.3.0
+
+- Total Rows will be count and show on extension populate
+- Hover effect added to buttons
 
 ### v1.2.0
 

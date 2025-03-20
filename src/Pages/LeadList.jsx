@@ -114,7 +114,9 @@ const LeadList = () => {
     });
 
     if (data.length > 0) {
-      const csv = Papa.unparse(data);
+      const csv = Papa.unparse(data, {
+        encoding: "utf-8"
+    });
       setCsvData(csv);
     } else {
       console.error("No data available to convert to CSV");
@@ -127,7 +129,10 @@ const LeadList = () => {
       return;
     }
 
-    const blob = new Blob([csvData], { type: "text/csv" });
+    const blob = new Blob([csvData], { 
+      type: "text/csv", 
+      encoding: "utf-8" 
+    });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;

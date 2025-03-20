@@ -1,7 +1,7 @@
 This project is orginally created in [qtecsolution/Linkedin-Sales-Navigator-Scraper](https://github.com/qtecsolution/Linkedin-Sales-Navigator-Scraper) and I've modified it to my use case. Please check the orginal project for more information and support.
 
-### Version: 1.3.0
-### @tag Total rows count improved
+### Version: 1.3.1
+### @tag Encoding utf-8 to csv added
 
 # Linkedin Sales Navigator Data Scraper Chrome Extension
 
@@ -36,6 +36,10 @@ This project is a Chrome extension designed to scrape data from LinkedIn's Sales
 - This extension is intended for educational and ethical use only.
 
 ## Changelog
+
+### v1.3.1
+
+- To ensure that the names are exported in universal format, encoding utf-8 has added as attribute in the unparse and export csv processes
 
 ### v1.3.0
 

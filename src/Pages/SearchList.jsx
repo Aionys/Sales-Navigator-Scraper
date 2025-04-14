@@ -15,9 +15,33 @@ const SearchList = () => {
       let hasNextPage = true;
 
       while (hasNextPage) {
+
+        // Wait until at least one person's name appears
         await chrome.scripting.executeScript({
           target: { tabId: tab.id },
-          func: scrollToBottom,
+          func: () => {
+            return new Promise((resolve) => {
+              const interval = setInterval(() => {
+                const nameCell = document.querySelector(
+                  'li.artdeco-list__item a span[data-anonymize="person-name"]'
+                );
+                if (nameCell && nameCell.textContent.trim() !== "") {
+                  clearInterval(interval);
+                  resolve(true);
+                }
+              }, 500);
+              // Optional: timeout after 10s just in case
+              setTimeout(() => {
+                clearInterval(interval);
+                resolve(false);
+              }, 5000);
+            });
+          },
+        });
+
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: scrollTopToBottom,
         });
 
         await new Promise(resolve => setTimeout(resolve, 2000)); // Wait to ensure content loads
@@ -57,7 +81,7 @@ const SearchList = () => {
         hasNextPage = nextClicked[0].result;
 
         if (hasNextPage) {
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait after clicking next
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait after clicking next
         }
       }
 
@@ -167,7 +191,7 @@ const SearchList = () => {
     });
   };
 
-  const scrollToBottom = async () => {
+  const scrollTopToBottom = async () => {
     return new Promise((resolve) => {
       let totalHeight = 0;
       const distance = 200;
@@ -179,6 +203,8 @@ const SearchList = () => {
         resolve();
         return;
       }
+
+      container.scrollBy(0, container.scrollHeight * (-1));
 
       const timer = setInterval(() => {
         const scrollHeight = container.scrollHeight;

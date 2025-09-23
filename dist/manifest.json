@@ -3,8 +3,12 @@
   "name": "Sales Navigator Demon",
   "version": "1.4.1",
   "description": "Extract publicly available lead data from LinkedIn Sales Navigator efficiently and export it in CSV format.",
-  "permissions": ["activeTab", "scripting", "storage"],
-  "host_permissions": ["https://www.linkedin.com/sales/lists/people"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": ["https://www.linkedin.com/sales/lists/people", 
+  "https://www.linkedin.com/sales/search*",
+  "https://www.linkedin.com/sales/lead",
+  "https://www.linkedin.com/sales/company"
+  ],
   "action": {
     "default_popup": "index.html",
     "default_icon": "./images/linkedin_scrapper_128.png"

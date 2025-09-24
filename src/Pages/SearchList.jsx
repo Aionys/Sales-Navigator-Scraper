@@ -15,7 +15,7 @@ const SearchList = () => {
     chrome.storage.local.get(["scrapedData"], (result) => {
       if (result.scrapedData && result.scrapedData.length > 0) {
         setTableSearchSheetCount(result.scrapedData.length - 1);
-        setCsvData(result.scrapedData.map(row => row.join(",")).join("\n"));
+        setCsvData(Papa.unparse(result.scrapedData));
       }
     });
   }, []);

@@ -8,7 +8,7 @@ export const unperseSearchData = async (setCsvData) => {
   });
 
   if (data.length > 0) {
-    const csv = Papa.unparse(data);
+    const csv = Papa.unparse(data, { quotes: true });
     setCsvData(csv);
   } else {
     console.error("No data available to convert to CSV");

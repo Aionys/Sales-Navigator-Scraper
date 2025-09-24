@@ -1,5 +1,12 @@
 This project is orginally created in [qtecsolution/Linkedin-Sales-Navigator-Scraper](https://github.com/qtecsolution/Linkedin-Sales-Navigator-Scraper) and I've modified it to my use case. Please check the orginal project for more information and support.
 
+### Version: 1.5.0
+
+- Parsing lead data from their profile.
+- Parsing lead roles from their profile.
+- Parsing lead company data from company pages.
+- Saving data for each scraped lead to local storage and reading data from local storage.
+
 ### Version: 1.4.1
 ### @tag Bug fix with auto next
 

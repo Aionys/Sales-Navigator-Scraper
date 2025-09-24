@@ -1,5 +1,9 @@
 This project is orginally created in [qtecsolution/Linkedin-Sales-Navigator-Scraper](https://github.com/qtecsolution/Linkedin-Sales-Navigator-Scraper) and I've modified it to my use case. Please check the orginal project for more information and support.
 
+### Version: 1.5.1
+
+- Place each record in the field in quotation marks.
+
 ### Version: 1.5.0
 
 - Parsing lead data from their profile.

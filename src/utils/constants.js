@@ -1,11 +1,13 @@
 export const headerArray = [
-  "FullName",
-  "LeadLocation",
-  "JobTitle",
-  "CompanyName",
-  "CompanyLocation",
-  "CompanyIndustry",
-  "CompanyWebsite"
+  "First Name",
+  "Last Name",
+  "Lead Location",
+  "Company",
+  "Title",
+  "Website",
+  "Industry",
+  "Company Location",
 ];
+
 
 export const baseLinkedinUrl = "https://www.linkedin.com";

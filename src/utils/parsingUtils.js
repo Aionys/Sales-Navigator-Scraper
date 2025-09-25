@@ -66,6 +66,9 @@ export function parseProfile() {
     
     const checkForData = () => {
       attempts++;
+
+      const firstNameElement = document.querySelector('h2 span[data-anonymize="person-name"]');
+      let firstName = firstNameElement ? firstNameElement.textContent.trim() : null;
       
       const fullNameElement = document.querySelector('h1[data-anonymize="person-name"]');
       let fullName = fullNameElement ? fullNameElement.textContent.trim() : null;
@@ -118,7 +121,8 @@ export function parseProfile() {
       }
       
       if ((fullName && fullName !== "Profile name not found") || rolesData.length > 0 || attempts >= maxAttempts) {
-        resolve({ 
+        resolve({
+          firstName: firstName || "First name not found",
           fullName: fullName || "Profile name not found",
           roles: rolesData.length > 0 ? rolesData : [{ jobTitle: "No current role", companyHref: null }]
         });

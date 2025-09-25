@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { unperseSearchData, downloadSearchCsv, clearSearchData } from '../utils/csvUtils';
 import { parseProfile, parseCompanyDetails, scrollTopToBottom, waitForTabLoad } from '../utils/parsingUtils';
 import { headerArray, baseLinkedinUrl } from '../utils/constants';
+import { cleanName } from "../utils/nameUtils"
 
 const SearchList = () => {
   const [csvData, setCsvData] = useState("");
@@ -151,6 +152,7 @@ const SearchList = () => {
           const profileUrl = profileHrefElement ? buildUrl(profileHrefElement.getAttribute("href")) : null;
 
           let profileData = { 
+            firstName: "First name not found",
             fullName: "Profile name not found", 
             roles: [{ jobTitle: "No current role", companyHref: null }] 
           };
@@ -180,7 +182,8 @@ const SearchList = () => {
             } catch (error) {
               console.error("Error fetching profile data", error);
               profileData = { 
-                fullName: "Error parsing profile", 
+                firstName: "Error parsing first name",
+                fullName: "Error parsing full name", 
                 roles: [{ jobTitle: "Error parsing role", companyHref: null }] 
               };
             }
@@ -235,20 +238,23 @@ const SearchList = () => {
             }
 
             if (companyDetails.companyName === "Company name not found") {
-              console.log(`Skipping lead for ${profileData.fullName} - Company not found`);
+              console.log(`Skipping lead for ${profileData.firstName} ${profileData.fullName} - Company not found`);
               continue;
             }
 
             await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
 
+            const { firstName, lastName } = cleanName(profileData.firstName, profileData.fullName);
+
             const rowData = [
-              profileData.fullName,
+              firstName,
+              lastName,
               leadLocation,
-              role.jobTitle,
               companyDetails.companyName,
-              companyDetails.companyLocation,
+              role.jobTitle,
+              companyDetails.companyWebsite,
               companyDetails.companyIndustry,
-              companyDetails.companyWebsite
+              companyDetails.companyLocation,
             ];
 
             const previousData = await new Promise((resolve) => {
@@ -275,13 +281,14 @@ const SearchList = () => {
         } catch (error) {
           console.error(`Error processing lead:`, error);
           const errorRow = [
-            "Error parsing lead",
-            "Error parsing location",
-            "Error parsing role",
+            "Error parsing first name",
+            "Error parsing last name",
+            "Error parsing lead location",
             "Error parsing company",
-            "Error parsing location",
+            "Error parsing title",
+            "Error parsing website",
             "Error parsing industry",
-            "Error parsing website"
+            "Error parsing company location",
           ];
 
           const previousData = await new Promise((resolve) => {

@@ -115,7 +115,20 @@ export function parseProfile() {
             const jobTitle = roleItem.querySelector('span[data-anonymize="job-title"]')?.textContent?.trim() || "No current role";
             const companyLink = roleItem.querySelector('a[data-anonymize="company-name"]');
             const companyHref = companyLink ? companyLink.getAttribute('href') : null;
-            rolesData.push({ jobTitle, companyHref });
+
+            rolesData.push({
+              jobTitle,
+              companyHref
+            });
+          });
+        } else {
+          const jobTitle = currentRoleContainer.querySelector('span[data-anonymize="job-title"]')?.textContent?.trim() || "No current role";
+          const companyLink = currentRoleContainer.querySelector('a[data-anonymize="company-name"]');
+          const companyHref = companyLink ? companyLink.getAttribute('href') : null;
+
+          rolesData.push({
+            jobTitle,
+            companyHref
           });
         }
       }

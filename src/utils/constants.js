@@ -4,6 +4,7 @@ export const headerArray = [
   "Lead Location",
   "Company",
   "Title",
+  "Linkedin page",
   "Website",
   "Industry",
   "Company Location",

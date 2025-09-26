@@ -62,17 +62,33 @@ export function parseCompanyDetails() {
 export function parseProfile() {
   return new Promise((resolve) => {
     let attempts = 0;
-    const maxAttempts = 10;
-    
+    const maxAttempts = 20;
+    let menuClicked = false;
+
     const checkForData = () => {
       attempts++;
 
       const firstNameElement = document.querySelector('h2 span[data-anonymize="person-name"]');
       let firstName = firstNameElement ? firstNameElement.textContent.trim() : null;
-      
+
       const fullNameElement = document.querySelector('h1[data-anonymize="person-name"]');
       let fullName = fullNameElement ? fullNameElement.textContent.trim() : null;
-      
+
+      let linkedinPage = "Linkedin page not found";
+
+      const menuButton = document.querySelector('div button[aria-label="Open actions overflow menu"]');
+      if (menuButton && !menuClicked) {
+        menuButton.click();
+        menuClicked = true;
+
+        return setTimeout(checkForData, 800);
+      }
+
+      const anchor = document.querySelector('div[id^="hue-menu-"] a[href^="https://www.linkedin.com/in/"]');
+      if (anchor) {
+        linkedinPage = anchor.href;
+      }
+
       if (!fullName || fullName === "" || fullName === "LinkedIn Member") {
         const alternativeSelectors = [
           'h1.text-heading-xlarge',
@@ -80,7 +96,6 @@ export function parseProfile() {
           '[data-test-id="profile-headline"] h1',
           '.pv-text-details__left-panel h1'
         ];
-        
         for (const selector of alternativeSelectors) {
           const element = document.querySelector(selector);
           if (element && element.textContent.trim()) {
@@ -89,51 +104,37 @@ export function parseProfile() {
           }
         }
       }
-      
+
       const rolesData = [];
       const currentRoleContainer = document.querySelector('div[data-sn-view-name="lead-current-role"]');
-      
       if (currentRoleContainer) {
         const rolesList = currentRoleContainer.querySelector('ul');
-        
         if (rolesList) {
           const roleItems = rolesList.querySelectorAll('li');
           roleItems.forEach((roleItem) => {
             const jobTitle = roleItem.querySelector('span[data-anonymize="job-title"]')?.textContent?.trim() || "No current role";
             const companyLink = roleItem.querySelector('a[data-anonymize="company-name"]');
             const companyHref = companyLink ? companyLink.getAttribute('href') : null;
-            
-            rolesData.push({
-              jobTitle,
-              companyHref
-            });
-          });
-        } else {
-          const jobTitle = currentRoleContainer.querySelector('span[data-anonymize="job-title"]')?.textContent?.trim() || "No current role";
-          const companyLink = currentRoleContainer.querySelector('a[data-anonymize="company-name"]');
-          const companyHref = companyLink ? companyLink.getAttribute('href') : null;
-          
-          rolesData.push({
-            jobTitle,
-            companyHref
+            rolesData.push({ jobTitle, companyHref });
           });
         }
       }
-      
-      if ((fullName && fullName !== "Profile name not found") || rolesData.length > 0 || attempts >= maxAttempts) {
+
+      if (linkedinPage !== "Linkedin page not found" || attempts >= maxAttempts) {
         resolve({
           firstName: firstName || "First name not found",
           fullName: fullName || "Profile name not found",
+          linkedinPage: linkedinPage,
           roles: rolesData.length > 0 ? rolesData : [{ jobTitle: "No current role", companyHref: null }]
         });
       } else {
         setTimeout(checkForData, 500);
       }
     };
-    
+
     checkForData();
   });
-}
+};
 
 export const scrollTopToBottom = async () => {
   return new Promise((resolve) => {

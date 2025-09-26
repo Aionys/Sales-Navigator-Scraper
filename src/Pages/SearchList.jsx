@@ -154,6 +154,7 @@ const SearchList = () => {
           let profileData = { 
             firstName: "First name not found",
             fullName: "Profile name not found", 
+            linkedinPage: "Linkedin page not found",
             roles: [{ jobTitle: "No current role", companyHref: null }] 
           };
 
@@ -184,6 +185,7 @@ const SearchList = () => {
               profileData = { 
                 firstName: "Error parsing first name",
                 fullName: "Error parsing full name", 
+                linkedinPage: "Error parsing linkedin page",
                 roles: [{ jobTitle: "Error parsing role", companyHref: null }] 
               };
             }
@@ -252,6 +254,7 @@ const SearchList = () => {
               leadLocation,
               companyDetails.companyName,
               role.jobTitle,
+              profileData.linkedinPage,
               companyDetails.companyWebsite,
               companyDetails.companyIndustry,
               companyDetails.companyLocation,
@@ -286,6 +289,7 @@ const SearchList = () => {
             "Error parsing lead location",
             "Error parsing company",
             "Error parsing title",
+            "Error parsing linkedin page",
             "Error parsing website",
             "Error parsing industry",
             "Error parsing company location",

@@ -3,12 +3,14 @@ This project is orginally created in [qtecsolution/Linkedin-Sales-Navigator-Scra
 ### Version: 1.5.1
 
 - Place each record in the field in quotation marks.
+- Parsing lead first name and last name.
+- Scraping lead linkedin page URL.
 
 ### Version: 1.5.0
 
-- Parsing lead data from their profile.
-- Parsing lead roles from their profile.
-- Parsing lead company data from company pages.
+- Scraping lead data from their profile.
+- Scraping lead roles from their profile.
+- Scraping lead company data from company pages.
 - Saving data for each scraped lead to local storage and reading data from local storage.
 
 ### Version: 1.4.1

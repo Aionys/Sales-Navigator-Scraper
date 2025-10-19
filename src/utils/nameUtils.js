@@ -30,7 +30,9 @@ function toTitleCase(text) {
         processed = parts
           .map((p) => {
             if (p === "") return "";
-            return p.length === 1 ? p.toUpperCase() : p[0].toUpperCase() + p.slice(1).toLowerCase();
+            return p.length === 1
+              ? p.toUpperCase()
+              : p[0].toUpperCase() + p.slice(1).toLowerCase();
           })
           .join(".");
       } else {
@@ -50,27 +52,32 @@ function toTitleCase(text) {
 }
 
 function parseFirstName(firstNameRaw) {
-  const s = transliterate(String(firstNameRaw || ""));
-  const noEmoji = emojiStrip(s);
-  const collapsed = noEmoji.replace(/\s+/g, " ").trim();
-  return toTitleCase(collapsed);
+  let s = transliterate(String(firstNameRaw || ""));
+  s = emojiStrip(s);
+  s = s.replace(/\s+/g, " ").trim();
+
+  s = s.replace(/(['’]s)$/i, "");
+  s = s.replace(/(['’])$/i, "");
+
+  return toTitleCase(s);
 }
 
 function parseLastName(firstNameRaw, fullNameRaw) {
   let s = String(fullNameRaw || "");
 
   if (firstNameRaw) {
-    const esc = escapeRegex(String(firstNameRaw).trim());
-    const re = new RegExp("^\\s*" + esc + "\\s*", "i");
+    let f = String(firstNameRaw).trim();
+    f = f.replace(/(['’]s)$/i, "");
+    f = f.replace(/(['’])$/i, "");
+
+    const pattern = "^\\s*" + escapeRegex(f) + "['’]?(?:s)?\\s*";
+    const re = new RegExp(pattern, "i");
     s = s.replace(re, "");
   }
 
   s = emojiStrip(s);
-
   s = s.split(",")[0].trim();
-
   s = transliterate(s);
-
   s = s.replace(/\s+/g, " ").trim();
 
   return toTitleCase(s);
